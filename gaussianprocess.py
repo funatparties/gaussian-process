@@ -78,7 +78,8 @@ class GaussianProcess():
     The process models data as coming from an underlying function with added
     Gaussian white noise.
     """
-    def __init__(self, kernel, noise_var=1, training_X=None, training_y=None, rng_seed = None):
+    def __init__(self, kernel, training_X=None, training_y=None,
+                 noise_var=1, rng_seed = None):
         """
 
         Parameters
@@ -114,7 +115,7 @@ class GaussianProcess():
         
         if not isinstance(kernel, Kernel):
             raise TypeError("kernel must be Kernel object.")
-        self.cov_kernel = kernel
+        self._kernel = kernel
         
         if not noise_var >= 0:
             raise ValueError("noise_var must be non-negative.")
@@ -156,13 +157,24 @@ class GaussianProcess():
     
     @property
     def kernel(self):
-        return self.cov_kernel
+        return self._kernel
     
     @kernel.setter
     def kernel(self, new_kernel):
         if not isinstance(new_kernel, Kernel):
             raise TypeError("kernel must be Kernel object.")
-        self.cov_kernel = new_kernel
+        self._kernel = new_kernel
+        if self._has_training:
+            self._training_cov() #update training covariance
+        return
+    
+    @property
+    def kernel_config(self):
+        return self._kernel.config
+    
+    @kernel_config.setter
+    def kernel_config(self, new_config):
+        self._kernel.config = new_config
         if self._has_training:
             self._training_cov() #update training covariance
         return
@@ -200,7 +212,7 @@ class GaussianProcess():
             DESCRIPTION.
 
         """
-        return cdist(X,Y,metric=self.cov_kernel.apply)
+        return cdist(X,Y,metric=self._kernel.apply)
     
     def _training_cov(self):
         self._y_cov = self.cov_matrix(self.training_X,self.training_X)
@@ -259,6 +271,9 @@ class GaussianProcess():
         return np.sqrt(np.diag(self.predictive_cov(X)))
     
     def sample_posterior(self, X, n):
+        if not self._has_training:
+            #sample prior
+            return self.sample_prior(X,n)
         mean = self.predictive_mean(X)
         cov = self.predictive_cov(X)
         return self.rng.multivariate_normal(mean.flatten(),cov,n)
