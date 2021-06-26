@@ -105,11 +105,11 @@ class GaussianProcess():
         """
         
         if not isinstance(kernel, Kernel):
-            raise TypeError("Must provide Kernel object as kernel.")
+            raise TypeError("kernel must be Kernel object.")
         self.kernel = kernel
         
         if not noise_var >= 0:
-            raise ValueError("Noise_var must be non-negative.")
+            raise ValueError("noise_var must be non-negative.")
         self._noise_var = noise_var
         
         self.rng = np.random.default_rng(rng_seed)
@@ -222,10 +222,16 @@ class GaussianProcess():
             DESCRIPTION.
 
         """
+        if not self._has_training:
+            #prior mean
+            return np.zeros(X.shape[0])
         cross_cov = self.cov_matrix(X,self.training_X)
         return cross_cov @ self._inv_y_noise_cov @ self.training_y
     
     def predictive_cov(self, X):
+        if not self._has_training:
+            #prior cov
+            return self.cov_matrix(X,X)
         cross_cov = self.cov_matrix(self.training_X,X)
         b = cross_cov.T @ self._inv_y_noise_cov @ cross_cov
         return self.cov_matrix(X,X) - b
