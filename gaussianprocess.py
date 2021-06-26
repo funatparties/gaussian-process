@@ -26,6 +26,14 @@ class Kernel(ABC):
         """
         return 0.0
     
+    @property
+    def config(self):
+        return self.__dict__
+    
+    @config.setter
+    def config(self, new_config):
+        self.__dict__.update(new_config)
+        return
     
 class Linear(Kernel):
     def __init__(self):
@@ -106,7 +114,7 @@ class GaussianProcess():
         
         if not isinstance(kernel, Kernel):
             raise TypeError("kernel must be Kernel object.")
-        self.kernel = kernel
+        self.cov_kernel = kernel
         
         if not noise_var >= 0:
             raise ValueError("noise_var must be non-negative.")
@@ -146,6 +154,19 @@ class GaussianProcess():
             raise ValueError("Noise_var must be non-negative")
         return
     
+    @property
+    def kernel(self):
+        return self.cov_kernel
+    
+    @kernel.setter
+    def kernel(self, new_kernel):
+        if not isinstance(new_kernel, Kernel):
+            raise TypeError("kernel must be Kernel object.")
+        self.cov_kernel = new_kernel
+        if self._has_training:
+            self._training_cov() #update training covariance
+        return
+    
     def update_training(self, training_X, training_y):
         if (training_X is None) and (training_y is None):
             self._has_training = False
@@ -163,8 +184,6 @@ class GaussianProcess():
             self._training_cov() #update training covariance
         return
     
-    #TODO:kernel config setters and getters
-    
     def cov_matrix(self, X, Y):
         """
 
@@ -181,7 +200,7 @@ class GaussianProcess():
             DESCRIPTION.
 
         """
-        return cdist(X,Y,metric=self.kernel.apply)
+        return cdist(X,Y,metric=self.cov_kernel.apply)
     
     def _training_cov(self):
         self._y_cov = self.cov_matrix(self.training_X,self.training_X)
@@ -244,3 +263,12 @@ class GaussianProcess():
         cov = self.predictive_cov(X)
         return self.rng.multivariate_normal(mean.flatten(),cov,n)
     
+def read_input(filename):
+    with open(filename, 'r') as f:
+        ar = np.array([float(line.strip()) for line in f])
+    ar = ar.reshape(ar.shape[0],1)
+    return ar
+
+test_inputs = read_input('test_inputs.txt')
+train_inputs = read_input('train_inputs.txt')
+train_outputs = read_input('train_outputs.txt')

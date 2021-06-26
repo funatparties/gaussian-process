@@ -3,13 +3,12 @@
 
 import matplotlib.pyplot as plt
 
-#TODO: config stuff
-
 class Plotter():
+    colours = 'bgmcykr'
+    config = None #TODO: store plot settings
     def __init__(self, x, mean, sigma, training_X=None, training_y=None,
-                 samples = None, config=None):
+                 samples = None):
         self.x = x #flattened
-        self.config = config
         self.mean = mean
         self.sigma = sigma
         if (training_X is None) and (training_y is None):
@@ -23,8 +22,15 @@ class Plotter():
         self.samples = samples
         return
     
-    #TODO:defadd samples
-    #TODO:defplot samples
+    def add_samples(self, samples):
+        self.samples = samples
+        return
+    
+    def plot_samples(self):
+        if self.samples is not None:
+            for i,y in enumerate(self.samples):
+                self.ax.plot(self.x, y, self.colours[i]+'-')
+        return
     
     def prepare_figure(self):
         self.fig = plt.figure(figsize=(6,4))
@@ -48,5 +54,6 @@ class Plotter():
         self.prepare_figure()
         self.plot_CI()
         self.plot_training()
+        self.plot_samples()
         plt.show()
         return
