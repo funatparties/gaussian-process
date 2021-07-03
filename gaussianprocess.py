@@ -27,6 +27,10 @@ class Kernel(ABC):
         return 0.0
     
     @property
+    def name(self):
+        return self.__class__.__name__
+    
+    @property
     def config(self):
         return self.__dict__
     
@@ -34,6 +38,9 @@ class Kernel(ABC):
     def config(self, new_config):
         self.__dict__.update(new_config)
         return
+    #TODO: Add value checking
+    
+    #TODO:store defaults
     
 class Linear(Kernel):
     def __init__(self):
@@ -43,16 +50,20 @@ class Linear(Kernel):
         return np.dot(p.T,q)
     
 class SquaredExponential(Kernel):
-    def __init__(self, l=1):
+    def __init__(self, l=1.0):
         self.l = l
         return
+    
+    @property
+    def name(self):
+        return "Squared Exponential"
     
     def apply(self, p, q):
         c = -1/(2*self.l*self.l)
         return np.exp(c*sqeuclidean(p,q))
     
 class Periodic(Kernel):
-    def __init__(self,l=1,P=1):
+    def __init__(self,l=1.0,P=1.0):
         self.l = l
         self.P = P
     
@@ -63,7 +74,7 @@ class Periodic(Kernel):
         return np.exp(c*s*s)
         
 class Polynomial(Kernel):
-    def __init__(self, d=2, c=0):
+    def __init__(self, d=2.0, c=0.0):
         self.d = d
         self.c = c
         

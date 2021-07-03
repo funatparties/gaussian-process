@@ -16,6 +16,8 @@ class Manager():
         self._test_X = test_X
         return
     
+    #TODO: training data funcs
+    
     @property
     def proc(self):
         return self._proc
