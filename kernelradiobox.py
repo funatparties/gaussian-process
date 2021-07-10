@@ -61,20 +61,28 @@ class KernelRadioBox(wx.Panel):
         field_data = [t.GetLineText(0) for t in self.fields]
         try:
             field_data = [self.convert_input(s) for s in field_data]
+            config = {k:v for k,v in zip(self.labels,field_data)}
+            self.kernels[self.rb.GetSelection()].config = config
+            self.EvtRadioBox(wx.EVT_RADIOBOX)
         except ValueError:
             print("Please enter a valid number.")
-            #TODO: display error message
-        #TODO: validate input
-        config = {k:v for k,v in zip(self.labels,field_data)}
-        self.kernels[self.rb.GetSelection()].config = config
+            #TODO: display error message in GUI
+        
     
     def EvtDefaultButton(self, event):
-        pass
+        self.kernels[self.rb.GetSelection()] = type(self.get_kernel())()
+        #Resets text fields
+        self.EvtRadioBox(wx.EVT_RADIOBOX)
+        
+    def get_kernel(self):
+        return self.kernels[self.rb.GetSelection()]
     
     def convert_input(self,s):
         s = s.strip()
         s = float(s)
         return s
+    
+    #TODO: display unsaved changes message
         
 if __name__ == '__main__':
     app = wx.App(False)
