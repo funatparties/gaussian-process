@@ -250,14 +250,33 @@ def read_array_txt(filename):
         x = x.reshape((*x.shape,1))
     return x
     
-def test():
+def demo():
+    """Function that demonstrates reading data, constructing a basic model,
+    and plotting the results.
+
+    Returns
+    -------
+    m : Manager
+        A Manager object containing the training data and setting specified for
+        the demo.
+
+    """
     
-    test_inputs = read_array_txt('data/test_inputs.txt')
+    #interpolate between -3 and 10
+    domain = np.linspace(start=-3, stop=10, num=301) 
+    domain = domain.reshape((*domain.shape,1))
+    
+    #use training data from files
     train_inputs = read_array_txt('data/train_inputs.txt')
     train_outputs = read_array_txt('data/train_outputs.txt')
     
+    #use Squared Exponential kernel
     sqk = k.SquaredExponential()
-    p = GaussianProcess(sqk,train_inputs,train_outputs,1,0)
-    m = Manager(p,test_inputs)
+    #generate gaussian process object
+    proc = GaussianProcess(kernel=sqk, training_X=train_inputs,
+                        training_y=train_outputs, noise_var=1, rng_seed=0)
+    #generate manager object
+    m = Manager(proc,domain)
+    #visualise plot
     m.plot()
     return m

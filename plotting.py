@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""@author: Josh"""
+"""@author: JoshM"""
 
 import matplotlib.pyplot as plt
 
@@ -107,10 +107,11 @@ class Plotter():
 
         """
         
-        self.fig = plt.figure(figsize=(6,4))
+        self.fig = plt.figure(figsize=(6,4),dpi=200)
         self.ax = self.fig.add_subplot(111)
         self.ax.set_xlabel("Input")
         self.ax.set_ylabel("Output")
+        self.ax.set_title("Regression Plot")
         return
     
     def plot_CI(self):
@@ -123,9 +124,9 @@ class Plotter():
 
         """
         
-        self.ax.plot(self.x,self.mean,'r-')
+        self.ax.plot(self.x,self.mean,'r-',label="Mean")
         plt.fill_between(self.x,self.mean+(2*self.sigma),
-                         self.mean-(2*self.sigma),alpha=0.5)
+                         self.mean-(2*self.sigma),alpha=0.5,label="95% Confidence Interval")
         return
     
     def plot_training(self):
@@ -138,7 +139,7 @@ class Plotter():
         """
         
         if self._has_training:
-            self.ax.plot(self.train_x, self.train_y, 'k+')
+            self.ax.plot(self.train_x, self.train_y, 'k+',label="Training Data")
         return
     
     def plot(self):
@@ -155,5 +156,6 @@ class Plotter():
         self.plot_CI()
         self.plot_training()
         self.plot_samples()
+        self.ax.legend()
         plt.show()
         return
