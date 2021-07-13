@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""@author: Josh"""
+"""@author: JoshM"""
 
 from kernel import Kernel
 import numpy as np
