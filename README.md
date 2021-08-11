@@ -7,7 +7,7 @@ This type of regression is premised on the assumption that the values at each po
 If we take a collection of many points over an interval and apply our kernel's covariance to their multivariate Gaussian, the result is a distribution of 'plausible' values sets. That is, the probability of a particular set of values for our point collection is defined by how well it obeys our assumption about covariance. In the absence of data, this basically generates random functions of the class defined by our kernel. When we have training data, however, the distribution can be updated using Bayesian inference (as detailed in Chapter 2 of [this resource](http://www.gaussianprocess.org/gpml/chapters/RW.pdf)) to prioritise those functions which agree with the training data. The mean of this distribution represents the best value estimate at each point in our collection, given the training data and assuming the covariance defined by the kernel.
 
 ## Program
-<img src="https://github.com/funatparties/gaussian-process/blob/master/images/example_plot.png" width="600">
+<img src="https://github.com/funatparties/gaussian-process/blob/master/images/example_plot_lp.png" width="600">
 
 ##### An example plot showing the distribution mean and confidence interval using a [squared exponential](https://www.cs.toronto.edu/~duvenaud/cookbook/) kernel.
 
