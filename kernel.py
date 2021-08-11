@@ -250,3 +250,19 @@ class Polynomial(Kernel):
         
     def apply(self, p, q):
         return (np.dot(p.T,q)+self.c)**self.d
+    
+class LocalPeriodic(Periodic):
+    """The locally periodic kernel is similar to the periodic kernel except the
+    periodicity can change over time. Equivalent to multiplying the squared
+    exponential kernel by the periodic kernel.
+    """
+    @property
+    def name(self):
+        return "Locally Periodic"
+    
+    def apply(self, p, q):
+        c = -2/(self.l*self.l)
+        d = np.pi*euclidean(p,q)/self.P
+        s = np.sin(d)
+        a = -1/(2*self.l*self.l)
+        return np.exp(c*s*s)*np.exp(a*sqeuclidean(p,q))

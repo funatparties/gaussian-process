@@ -342,7 +342,7 @@ class GaussianProcess():
         if not self._has_training:
             #prior mean
             return np.zeros(X.shape[0])
-        cross_cov = self.cov_matrix(X,self._training_X)
+        cross_cov = self.cov_matrix(X, self._training_X)
         return cross_cov @ self._inv_y_noise_cov @ self._training_y
     
     def predictive_cov(self, X):

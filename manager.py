@@ -25,7 +25,8 @@ class Manager():
         Raises
         ------
         TypeError
-            Raises TypeError if proc is not a GaussianProcess object.
+            Raises TypeError if proc is not a GaussianProcess object or domain
+            is not an array-like.
 
         Returns
         -------
@@ -37,6 +38,12 @@ class Manager():
         if not isinstance(proc, GaussianProcess):
             raise TypeError("proc must be GaussianProcess object.")
         self._proc = proc
+        if domain is not None:
+            if len(domain) == 0:
+                domain = None
+            else:
+                if len(domain.shape) < 2:
+                    domain = domain.reshape((-1,1))
         self._test_X = domain
         return
     
@@ -125,16 +132,24 @@ class Manager():
         new_X : array-like
             An n x 1 array of the points at which predictions will be made by
             the model.
+            
+        Raises
+        ------
+        TypeError
+            Raises TypeError if new_X is not an array-like.
 
         Returns
         -------
         None.
 
         """
-        
         if new_X is not None:
             if len(new_X) == 0:
-                self._test_X = None
+                new_X = None
+            else:
+                new_X = np.array(new_X)
+                if len(new_X.shape) < 2:
+                    new_X.reshape((*new_X.shape,1))
         self._test_X = new_X
         return
     
@@ -207,6 +222,8 @@ class Manager():
         self._plotter.plot()
         return
     
+    #TODO: generate proc method
+    
 
 def write_array_txt(filename, array):
     """Saves an array as a txt file using the numpy filewriter
@@ -264,16 +281,15 @@ def demo():
     
     #interpolate between -3 and 10
     domain = np.linspace(start=-3, stop=10, num=301) 
-    domain = domain.reshape((*domain.shape,1))
     
     #use training data from files
     train_inputs = read_array_txt('data/train_inputs.txt')
     train_outputs = read_array_txt('data/train_outputs.txt')
     
     #use Squared Exponential kernel
-    sqk = k.SquaredExponential()
+    lp = k.LocalPeriodic(l=2, P=3)
     #generate gaussian process object
-    proc = GaussianProcess(kernel=sqk, training_X=train_inputs,
+    proc = GaussianProcess(kernel=lp, training_X=train_inputs,
                         training_y=train_outputs, noise_var=1, rng_seed=0)
     #generate manager object
     m = Manager(proc,domain)
