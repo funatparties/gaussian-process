@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """@author: Josh"""
 
-from kernel import Kernel
+from kernel import Kernel, SquaredExponential
 import numpy as np
 from scipy.spatial.distance import cdist
 
@@ -14,13 +14,14 @@ class GaussianProcess():
     The process models data as coming from an underlying function with covariance
     over space defined by a kernel function plus added Gaussian white noise.
     """
-    def __init__(self, kernel, training_X=None, training_y=None,
+    def __init__(self, kernel=SquaredExponential(), training_X=None, training_y=None,
                  noise_var=1, rng_seed = None):
         """
         Parameters
         ----------
         kernel : Kernel
-            The covariance kernel (with set hyperparameters)
+            The covariance kernel (with set hyperparameters). The default is
+            the squared exponential kernel.
         noise_var : float, optional
             The variance of the added Gaussian white noise, must be non-negative.
             The default is 1.

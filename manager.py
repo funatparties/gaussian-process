@@ -11,7 +11,7 @@ class Manager():
     """A top level class that provides an interface for accessing, updating, and
     plotting gaussian processes.
     """
-    def __init__(self, proc, domain=None):
+    def __init__(self, proc=None, domain=None):
         """
         Parameters
         ----------
@@ -35,8 +35,9 @@ class Manager():
         """
         
         self._plotter = None
-        if not isinstance(proc, GaussianProcess):
-            raise TypeError("proc must be GaussianProcess object.")
+        if proc is not None:
+            if not isinstance(proc, GaussianProcess):
+                raise TypeError("proc must be GaussianProcess object.")
         self._proc = proc
         if domain is not None:
             if len(domain) == 0:
@@ -222,7 +223,26 @@ class Manager():
         self._plotter.plot()
         return
     
-    #TODO: generate proc method
+    @classmethod
+    def create_proc(self, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        kernel : TYPE
+            DESCRIPTION.
+        **kwargs : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
+        
+        return GaussianProcess(*args, **kwargs)
+
     
 
 def write_array_txt(filename, array):
